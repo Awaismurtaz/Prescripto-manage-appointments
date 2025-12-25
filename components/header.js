@@ -1,4 +1,6 @@
 "use client";
+import { getToken } from "next-auth/jwt";
+import { getSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -7,21 +9,10 @@ import React, { useEffect, useState } from "react";
 const Header = () => {
   const path = usePathname();
   const router = useRouter();
-  const [token, setToken] = useState(null);
+  const token=getSession();
+  
+console.log(token,"token")
 
-  // Check token from localStorage on component mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("token");
-      setToken(storedToken);
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
-    router.push("/");
-  };
 
   return (
     <nav className="navbar navbar-expand-lg">
@@ -110,7 +101,7 @@ const Header = () => {
                     <Link href="/my-appointments">My Appointments</Link>
                   </li>
                   <li>
-                    <Link href="#" onClick={handleLogout}>
+                    <Link href="#" onClick={()=>signOut({callbackUrl:"/login"})}>
                       Logout
                     </Link>
                   </li>

@@ -1,8 +1,9 @@
 'use client'
 import React from 'react'
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const AdminHeader = () => {
+  const session=useSession();
   return (
     <nav className="navbar navbar-expand px-3">
       <div className="container-fluid">
@@ -14,9 +15,9 @@ const AdminHeader = () => {
         </a>
         <a
           href="Admin-panal"
-          className="btn py-1 px-3  btn-outline-dark rounded-5 mt-1"
+          className="btn py-1 px-3  btn-outline-dark rounded-5 mt-1 text-capitalize"
         >
-          Admin
+          {session?.data?.user?.role}
         </a>
         <div className="ms-auto d-flex align-items-center gap-3">
           <button

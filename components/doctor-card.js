@@ -14,8 +14,10 @@ const DoctorCard = (props) => {
             ? `/uploads/${doctorDetail.profile_image}`
             : DoctorAvatar.src
         }
+        alt={`${doctorDetail?.first_name || ""} ${
+          doctorDetail?.last_name || ""
+        }`.trim()}
         className="card-img-top img-fluid"
-        alt={`${doctorDetail?.first_name || ""} ${doctorDetail?.last_name || ""}`.trim()}
       />
       <div className="card-body doctor_card_body">
         <p className="icon-text">
@@ -25,7 +27,9 @@ const DoctorCard = (props) => {
         <p className="doctor-name">
           {doctorDetail?.first_name} {doctorDetail?.last_name}
         </p>
-        <p className="doctor-type">{doctorDetail?.doctor?.specialty || "None"}</p>
+        <p className="doctor-type">
+          {doctorDetail?.specialty || "None"}
+        </p>
       </div>
     </div>
   );

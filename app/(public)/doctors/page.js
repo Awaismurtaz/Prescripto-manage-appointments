@@ -1,108 +1,114 @@
 "use client";
 
-import axios from "axios"; // Missing import in your snippet
+import axios from "axios";
 import DoctorCard from "@/components/doctor-card";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Doctors = () => {
-  const [doctors, setDoctors] = useState([]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const handleGetDoctor = async () => {
+  const categories = [
+    "All Doctors",
+    "General physician",
+    "Gynologist", 
+    "Dermatologist",
+    "Gastroenterologist",
+    "Neurologist",
+    "Pediatricians",
+  ];
+  // <-- Define your categories statically here
+
+  const [doctors, setDoctors] = useState([]);
+console.log(doctors,"doctors")
+  // Read category from query string (default "All Doctors")
+  const selectedCategory = searchParams.get("category") || "All Doctors";
+
+  // Fetch doctors from API based on category
+  const fetchDoctors = async (category) => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/doctors`
-      );
+      let apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/doctors`;
+      if (category && category !== "All Doctors") {
+       apiUrl += `?specialty=${encodeURIComponent(category)}`;
+      }
+      const response = await axios.get(apiUrl);
       setDoctors(response?.data?.data || []);
     } catch (error) {
       console.error(error);
+      setDoctors([]);
     }
   };
 
   useEffect(() => {
-    handleGetDoctor();
-  }, []);
+    fetchDoctors(selectedCategory);
+  }, [selectedCategory]);
 
-  // Collect unique specialties from nested doctor object
-  const categories = [
-    "All Doctors",
-    ...Array.from(
-      new Set(
-        doctors.map((d) => d?.doctor?.specialty).filter((spec) => spec) // filter out undefined/null
-      )
-    ),
-  ];
+  const handleCategoryChange = (category) => {
+    const query = new URLSearchParams(window.location.search);
+    if (category === "All Doctors") {
+      query.delete("category");
+    } else {
+      query.set("category", category);
+    }
+
+    router.replace(`${window.location.pathname}?${query.toString()}`, {
+      scroll: false,
+    });
+  };
 
   return (
-    <div className="row">
-      <p className="pills-p">Browse through the doctors specialist.</p>
-
+    <div className="row g-4">
       {/* Left Side - Pills */}
-      <div className="col-md-2 col-lg-3 mb-4">
+      <div className="col-md-3 col-lg-3 ">
         <div
-          className="nav flex-column nav-pills me-3 custom_pill_tabs"
-          id="v-pills-tab"
+          className="nav flex-column nav-pills me-3 custom_pill_tabs pt-4"
           role="tablist"
           aria-orientation="vertical"
         >
-          {categories.map((cat, idx) => {
-            const id = `tab-${idx}`;
-            return (
-              <button
-                key={cat}
-                className={`nav-link ${idx === 0 ? "active" : ""}`}
-                data-bs-toggle="pill"
-                data-bs-target={`#${id}`}
-                type="button"
-                role="tab"
-                aria-controls={id}
-                aria-selected={idx === 0}
-              >
-                {cat}
-              </button>
-            );
-          })}
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className={`nav-link ${cat === selectedCategory ? "active" : ""}`}
+              type="button"
+              role="tab"
+              aria-selected={cat === selectedCategory}
+              onClick={() => handleCategoryChange(cat)}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Right Side - Content */}
-      <div className="col-md-10 col-lg-9">
-        <div className="tab-content" id="v-pills-tabContent">
-          {categories.map((cat, idx) => {
-            const id = `tab-${idx}`;
-            // Fix filter to check nested specialty inside doctor object
-            const list =
-              cat === "All Doctors"
-                ? doctors
-                : doctors.filter((d) => d?.doctor?.specialty === cat);
-            return (
-              <div
-                key={id}
-                className={`tab-pane fade ${idx === 0 ? "show active" : ""}`}
-                id={id}
-                role="tabpanel"
-                aria-labelledby={`tab-${idx}`}
-                tabIndex={0}
-              >
-                <div className="row g-4 all-doctor-row">
-                  {list.length > 0 ? (
-                    list.map((doc) => (
-                      <div key={doc.id} className="col-12 col-md-6 col-lg-4">
-                        <Link
-                          href={`/doctors/${doc.id}`}
-                          className="text-decoration-none"
-                        >
-                          <DoctorCard doctorDetail={doc} />
-                        </Link>
-                      </div>
-                    ))
-                  ) : (
-                    <p>No doctors found in this category.</p>
-                  )}
+      <div className="col-md-9 col-lg-9">
+        <p className="pills-p">Browse through the doctors specialist.</p>
+
+        <div className="tab-content">
+          <div className="tab-pane show active" role="tabpanel">
+            <div className="row g-4 all-doctor-row">
+              {doctors.length > 0 ? (
+                doctors.map((doc) => (
+                  <div key={doc.id} className="col-12 col-md-6 col-lg-4">
+                    <Link
+                      href={`/doctors/${doc.id}`}
+                      className="text-decoration-none"
+                    >
+                      <DoctorCard doctorDetail={doc} />
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <div className="d-flex align-items-center justify-content-center " style={{minHeight:"400px"}}>
+                  <p className="text-black ">
+                    No doctors found in this category.
+                  </p>
                 </div>
-              </div>
-            );
-          })}
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

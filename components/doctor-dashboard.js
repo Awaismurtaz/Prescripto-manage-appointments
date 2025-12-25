@@ -1,19 +1,10 @@
 import React from 'react'
 
-const AdminDashboard = () => {
+const DoctorDashboard = () => {
   return (
     <>
       <div className="top-dash d-flex gap-3">
-        <div className="top-in d-flex ">
-          <div className="top-icon">
-            <img src="img/Group 4134 (1).png" alt />
-          </div>
-          <div className="dash-text d-flex flex-column">
-            <p>14</p>
-            <p>Doctors</p>
-          </div>
-        </div>
-        <div className="top-in d-flex  ">
+        <div className="top-in d-flex">
           <div className="top-icon">
             <img src="img/appointments_icon.svg" alt />
           </div>
@@ -22,7 +13,7 @@ const AdminDashboard = () => {
             <p>Appointments</p>
           </div>
         </div>
-        <div className="top-in d-flex ">
+        <div className="top-in d-flex">
           <div className="top-icon">
             <img src="img/Group 4296.png" alt />
           </div>
@@ -92,4 +83,4 @@ const AdminDashboard = () => {
   );
 }
 
-export default AdminDashboard
+export default DoctorDashboard

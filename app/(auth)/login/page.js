@@ -29,34 +29,6 @@ const Login = () => {
 
   const router = useRouter();
 
-  // const onSubmit = async (data) => {
-  //   try {
-  //     const response = await axios.post(
-  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
-  //       data
-  //     );
-  //     console.log(response,"response login")
-  //     if (response.status === 200) {
-  //     const token = response?.data?.token;
-  //     const user = response?.data?.user?.role;
-  //     localStorage.setItem("token", token);
-  //     localStorage.setItem("user", user);
-
-  //       toast.success(response?.data?.message);
-  //       const role = response?.data?.user?.role;
-  //       if (role === "doctor") {
-  //         router.push("/dashboard");
-  //       } else {
-  //         router.push("/my-appointments");
-  //       }
-  //     }
-  //     reset();
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error(error.response.data.message);
-  //   }
-  // };
-
   const onSubmit = async (data) => {
     const result = await signIn("credentials", {
       redirect: false,
@@ -116,10 +88,16 @@ const Login = () => {
           {errors.password && (
             <p className=" text-danger small">{errors.password.message}</p>
           )}
+          <p className="mt-2 mb-4">
+            <Link href="/forgot-password" className="text-decoration-none">
+              Forgot Password
+            </Link>
+          </p>
+
           <button
             className="btn form-btn py-2"
             type="submit"
-            // disabled={!isDirty || !isValid}
+            disabled={!isDirty || !isValid}
           >
             Login
           </button>

@@ -14,15 +14,15 @@ model User {
   email         String   @unique
   password      String
   phone         String?
-  address1      String?
-  address2      String?
+  address       String?
   role          String   @default("user") // user, doctor, admin
   profile_image String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   // Relation: One user -> One doctor profile
-  doctor        Doctor?
+  doctor      Doctor?
+  appointments Appointments?
 }
 
 model Doctor {
@@ -36,6 +36,23 @@ model Doctor {
   updatedAt  DateTime @updatedAt
 
   // Link to User
-  userId     Int?     @unique
-  user       User?     @relation(fields: [userId], references: [id])
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id])
+  appointments Appointments[]
+}
+
+model Appointments {
+  id              Int       @id @default(autoincrement())
+  doctor_id       Int?      
+  patient_id      Int?      @unique
+  is_cancel       Boolean?
+  fee             String?
+  pay_type        String?
+  appointment_date DateTime?
+  createdAt       DateTime  @default(now())
+  canceled_at     DateTime?
+
+  // Link to User
+  patient  User?  @relation(fields: [patient_id], references: [id])
+  doctor   Doctor? @relation(fields: [doctor_id], references: [id])
 }

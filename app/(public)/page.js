@@ -1,82 +1,43 @@
+"use client"
 import DoctorCard from '@/components/doctor-card';
+import DoctorCardSkeleton from '@/components/DoctorCardSkeleton';
+import axios from 'axios';
 import Image from 'next/image'
 import Link from 'next/link';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const HomePage = () => {
+  const [doctors, setDoctors]=useState([]);
+  const [limit, setLimit]=useState(10);
+  const [loading, setLoading]=useState(true)
 
-  const doctors = [
-    {
-      id: 1,
-      name: "Dr. Richard James",
-      specialty: "General Physician",
-      img: "/img/image 388.png",
-      status: "Available",
-    },
-    {
-      id: 2,
-      name: "Dr. Sarah Lee",
-      specialty: "Gynecologist",
-      img: "/img/file (2) 1.png",
-      status: "Available",
-    },
-    {
-      id: 3,
-      name: "Dr. John Doe",
-      specialty: "Dermatologist",
-      img: "/img/file (2) 3.png",
-      status: "Available",
-    },
-    {
-      id: 4,
-      name: "Dr. Emily Smith",
-      specialty: "Pediatrician",
-      img: "/img/file (5) 3.png",
-      status: "Available",
-    },
-    {
-      id: 5,
-      name: "Dr. Alex Brown",
-      specialty: "Neurologist",
-      img: "/img/file (4) 4.png",
-      status: "Available",
-    },
-    {
-      id: 6,
-      name: "Dr. Maria Anwar",
-      specialty: "Gastroenterologist",
-      img: "/img/file (2) 3.png",
-      status: "Available",
-    },
-    {
-      id: 7,
-      name: "Dr. Richard James",
-      specialty: "General Physician",
-      img: "/img/file (3) 1.png",
-      status: "Available",
-    },
-    {
-      id: 8,
-      name: "Dr. Sarah Lee",
-      specialty: "Gynecologist",
-      img: "/img/file (4) 2.png",
-      status: "Available",
-    },
-    {
-      id: 9,
-      name: "Dr. Richard James",
-      specialty: "Dermatologist",
-      img: "/img/file (3) 3.png",
-      status: "Available",
-    },
-    {
-      id: 10,
-      name: "Dr. Maria Anwar",
-      specialty: "Gastroenterologist",
-      img: "/img/file (5) 2.png",
-      status: "Available",
+  const getDoctors=async()=>{
+    try {
+      let response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/doctors`);
+      setDoctors(response?.data?.data || []);
+      setLoading(false)
+    } catch (error) {
+      console.error(error);
+      setDoctors([]);
+      setLoading(false)
     }
-  ];
+  }
+  const updateLimit=()=>{
+    if(window.innerWidth >= 1400){
+      setLimit(10)
+    }else{
+      setLimit(8)
+    }
+  }
+
+  useEffect(()=>{
+    getDoctors();
+
+    window.addEventListener("resize", updateLimit)
+
+    return ()=> window.removeEventListener("resize", updateLimit)
+  },[])
+
   return (
     <div>
       <div className="first-doctor">
@@ -235,21 +196,39 @@ const HomePage = () => {
             Simply browse through our extensive list of trusted doctors.
           </p>
           <div className="doctor-card">
-            <div className="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-4 row-cols-xl-5">
-              {doctors.map((doc) => (
-                <div key={doc.id} className="col">
-                  <Link href={`/doctors/${doc.id}`} className='text-decoration-none'>
-                    <DoctorCard doctorDetail={doc} />
-                  </Link>
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              // Show Loader inside a single row
+              <div className="row g-4 row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 row-cols-xxl-5">
+                {[...Array(limit)].map((_, idx) => (
+                  <div key={idx} className="col">
+                    <DoctorCardSkeleton />
+                  </div>
+                ))}
+              </div>
+            ) : doctors.length > 0 ? (
+              // Show Doctors Grid inside a single row
+              <div className="row g-4 row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 row-cols-xxl-5">
+                {doctors.slice(0, limit).map((doc) => (
+                  <div key={doc.id} className="col">
+                    <Link
+                      href={`/doctors/${doc.id}`}
+                      className="text-decoration-none"
+                    >
+                      <DoctorCard doctorDetail={doc} />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // Optional: No Results Message
+              <p>No doctors found.</p>
+            )}
           </div>
 
           <div className="d-flex justify-content-center">
-            <a href="All Doctor.html" className="btn doctor-btn">
+            <Link href="/doctors" className="btn doctor-btn">
               more
-            </a>
+            </Link>
           </div>
         </div>
       </section>

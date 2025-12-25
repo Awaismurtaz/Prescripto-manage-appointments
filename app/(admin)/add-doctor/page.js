@@ -12,17 +12,12 @@ const schema = yup.object().shape({
   last_name: yup.string().required("Last name is required"),
   phone: yup.string().required("Phone number is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
   speciality: yup.string().required("Speciality is required"),
   education: yup.string().required("Education is required"),
-  address1: yup.string().required("Address 1 is required"),
-  address2: yup.string(),
+  address: yup.string().required("Address is required"),
   experience: yup.string().required("Experience is required"),
-  fees: yup.string().required("Fees is required"),
-  aboutMe: yup.string(),
+  fee: yup.string().required("Fee is required"),
+  bio: yup.string(),
 
   profile_image: yup
     .mixed()
@@ -65,15 +60,13 @@ const AddDoctor = () => {
      formData.append("first_name", data.first_name);
      formData.append("last_name", data.last_name);
      formData.append("email", data.email);
-     formData.append("password", data.password);
      formData.append("speciality", data.speciality);
      formData.append("education", data.education);
-     formData.append("address1", data.address1);
-     formData.append("address2", data.address2);
+     formData.append("address", data.address);
      formData.append("experience", data.experience);
-     formData.append("fees", data.fees);
+     formData.append("fee", data.fee);
      formData.append("phone", data.phone);
-     formData.append("aboutMe", data.aboutMe);
+     formData.append("bio", data.bio);
 
      if (data.profile_image && data.profile_image[0]) {
        formData.append("profile_image", data.profile_image[0]);
@@ -137,8 +130,8 @@ const AddDoctor = () => {
                       id="doctorImage"
                       style={{ display: "none" }}
                       onChange={(e) => {
-                        field.onChange(e.target.files); 
-                        handleImageChange(e); 
+                        field.onChange(e.target.files);
+                        handleImageChange(e);
                       }}
                     />
                   )}
@@ -284,61 +277,20 @@ const AddDoctor = () => {
             </div>
 
             <div className="col-md-6 col-lg-6 col-sm-12">
-              <label htmlFor="doctorPassword" className="form-label">
-                Doctor Password
+              <label htmlFor="address" className="form-label">
+                Address
               </label>
               <input
-                id="doctorPassword"
-                type="password"
-                className="form-control area-alet"
-                placeholder="Password"
-                aria-label="Password"
-                {...register("password")}
-              />
-              {errors.password && (
-                <span className="text-danger small">
-                  {errors.password.message}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Address1 & Address2 */}
-          <div className="row g-3 mt-3" style={{ color: "#7B7B7B" }}>
-            <div className="col-md-6 col-lg-6 col-sm-12">
-              <label htmlFor="address1" className="form-label">
-                Address 1
-              </label>
-              <input
-                id="address1"
+                id="address"
                 type="text"
                 className="form-control area-alet"
-                placeholder="Address 1"
-                aria-label="Address 1"
-                {...register("address1")}
+                placeholder="Address"
+                aria-label="Address"
+                {...register("address")}
               />
-              {errors.address1 && (
+              {errors.address && (
                 <span className="text-danger small">
-                  {errors.address1.message}
-                </span>
-              )}
-            </div>
-
-            <div className="col-md-6 col-lg-6 col-sm-12">
-              <label htmlFor="address2" className="form-label">
-                Address 2
-              </label>
-              <input
-                id="address2"
-                type="text"
-                className="form-control area-alet"
-                placeholder="Address 2"
-                aria-label="Address 2"
-                {...register("address2")}
-              />
-              {errors.address2 && (
-                <span className="text-danger small">
-                  {errors.address2.message}
+                  {errors.address.message}
                 </span>
               )}
             </div>
@@ -360,11 +312,11 @@ const AddDoctor = () => {
                 <option value="" disabled>
                   Experience
                 </option>
-                <option value="1 year">1 year Experience</option>
-                <option value="2 years">2 years Experience</option>
-                <option value="3 years">3 years Experience</option>
-                <option value="4 years">4 years Experience</option>
-                <option value="5 years">5 years Experience</option>
+                <option value="1">1 year Experience</option>
+                <option value="2">2 years Experience</option>
+                <option value="3">3 years Experience</option>
+                <option value="4">4 years Experience</option>
+                <option value="5">5 years Experience</option>
               </select>
               {errors.experience && (
                 <span className="text-danger small">
@@ -383,29 +335,29 @@ const AddDoctor = () => {
                 className="form-control"
                 placeholder="Your Fees"
                 aria-label="Fees"
-                {...register("fees")}
+                {...register("fee")}
               />
-              {errors.fees && (
-                <span className="text-danger small">{errors.fees.message}</span>
+              {errors.fee && (
+                <span className="text-danger small">{errors.fee.message}</span>
               )}
             </div>
           </div>
 
           {/* About Me */}
           <div className="mt-4" style={{ color: "#7B7B7B", fontSize: 16 }}>
-            <label htmlFor="aboutMe" className="form-label">
+            <label htmlFor="bio" className="form-label">
               About Me
             </label>
             <textarea
               className="form-control"
               placeholder="Write about yourself"
-              id="aboutMe"
+              id="bio"
               style={{ height: 100 }}
-              {...register("aboutMe")}
+              {...register("bio")}
             />
-            {errors.aboutMe && (
+            {errors.bio && (
               <span className="text-danger small">
-                {errors.aboutMe.message}
+                {errors.bio.message}
               </span>
             )}
           </div>

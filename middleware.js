@@ -10,6 +10,15 @@ export async function middleware(req) {
   if (["/api/login", "/api/register"].includes(pathname))
     return NextResponse.next();
 
+  // Allow public GET /api/doctors without token
+  if (
+    req.method === "GET" &&
+    (pathname === "/api/doctors" ||
+      pathname.startsWith("/api/doctors/"))
+  ) {
+    return NextResponse.next();
+  }
+
   // Protected API
   if (!token) {
     return NextResponse.json(
@@ -23,7 +32,7 @@ export async function middleware(req) {
     },
   });
 
-  response.headers.set("role", token.role); 
+  response.headers.set("role", token.role);
 
   return response;
 }
